@@ -3,6 +3,7 @@ import {
   loginUserService,
   fetchAllUsers,
   fetchUserById,
+  getCurrentUserService,
 } from "../services/user.service.js";
 
 const cookieOptions = {
@@ -14,6 +15,7 @@ const cookieOptions = {
 
 export const registerUser = async (req, res, next) => {
   try {
+    console.log("BODY:", req.body);
     const { user, token } = await registerUserService(req.body);
 
     res.status(201).cookie("token", token, cookieOptions).json({
@@ -48,6 +50,19 @@ export const getAllUsers = async (req, res, next) => {
       success: true,
       count: users.length,
       users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    const user = await getCurrentUserService(req.user.userId);
+
+    res.status(200).json({
+      success: true,
+      user,
     });
   } catch (error) {
     next(error);

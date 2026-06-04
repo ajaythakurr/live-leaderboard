@@ -10,9 +10,11 @@ import express from "express";
 import {
   registerUser,
   loginUser,
+  getCurrentUser,
   getAllUsers,
   getUserById,
 } from "../controllers/user.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -90,6 +92,50 @@ router.get("/", getAllUsers);
 
 /**
  * @swagger
+ * /api/users/me:
+ *   get:
+ *     summary: Get currently logged-in user
+ *     description: Returns the details of the authenticated user using the JWT stored in cookies.
+ *     tags: [Users]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: 6865abc123def456789ghi01
+ *                     username:
+ *                       type: string
+ *                       example: ajay
+ *                     email:
+ *                       type: string
+ *                       example: ajay@gmail.com
+ *                     score:
+ *                       type: number
+ *                       example: 150
+ *       401:
+ *         description: Unauthorized - Invalid or missing JWT token
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/me", verifyJWT, getCurrentUser);
+
+/**
+ * @swagger
  * /api/users/{id}:
  *   get:
  *     summary: Get user by ID
@@ -106,6 +152,8 @@ router.get("/", getAllUsers);
  *       404:
  *         description: User not found
  */
+
 router.get("/:id", getUserById);
+
 
 export default router;

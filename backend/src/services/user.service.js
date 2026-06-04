@@ -70,6 +70,16 @@ export const fetchAllUsers = async () => {
   return await User.find().select("-password");
 };
 
+export const getCurrentUserService = async (userId) => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
 export const fetchUserById = async (userId) => {
   return await User.findById(userId).select("-password");
 };
